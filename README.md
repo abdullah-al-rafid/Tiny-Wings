@@ -233,3 +233,262 @@ lib/
 ├── firebase_options.dart
 ├── app.dart
 └── main.dart
+```
+## 🔥 Firebase Integration
+
+TinyWings uses Firebase as its backend infrastructure.
+
+### Firebase Authentication
+
+Firebase Authentication handles:
+
+- User registration
+- User login
+- Authentication state
+- Password management
+- User sessions
+
+### Cloud Firestore
+
+Cloud Firestore is used for application data including:
+
+- Users
+- Organizations
+- Needs
+- Donations
+- Sponsorships
+- Volunteer opportunities
+- Applications
+- Notifications
+- Other application records
+
+### Firebase Storage
+
+Firebase Storage is used for:
+
+- Profile pictures
+- User-uploaded images
+- Application media assets
+
+### Firebase Realtime Database
+
+Realtime Database is used for selected real-time application data and mappings.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Flutter SDK
+- Dart SDK
+- Android Studio or VS Code
+- Android Emulator or a physical Android device
+- Firebase project
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/abdullah-al-rafid/Tiny-Wings.git
+cd Tiny-Wings
+```
+
+### 2. Install Dependencies
+
+    flutter pub get
+
+### 3. Configure Firebase
+
+Make sure your Firebase project is configured correctly.
+
+The project uses:
+
+- Firebase Authentication
+- Cloud Firestore
+- Firebase Storage
+- Firebase Realtime Database
+
+The Firebase configuration is generated through FlutterFire CLI.
+
+    flutterfire configure
+
+### 4. Run the Application
+
+    flutter run
+
+To run on Chrome:
+
+    flutter run -d chrome
+
+### 5. Run Tests
+
+    flutter test
+
+---
+
+## 🔐 Security
+
+TinyWings uses Firebase Authentication and Firestore Security Rules to control access to application data.
+
+Authenticated users are required for protected Firestore operations.
+
+For production deployment, security rules should be further restricted according to user roles and collection-level permissions.
+
+---
+
+## 📊 Core Data Modules
+
+The application is organized around several major data modules:
+
+    Users
+    Organizations
+    Needs
+    Donations
+    Sponsorships
+    Children
+    Volunteer Opportunities
+    Applications
+    Notifications
+    Transactions
+
+These modules work together to create a centralized childcare support ecosystem.
+
+---
+
+## 🎨 User Experience
+
+TinyWings focuses on providing a clean and intuitive mobile experience.
+
+The application includes:
+
+- Material 3 components
+- Responsive layouts
+- Reusable UI components
+- Animated interactions
+- Smooth page transitions
+- Interactive cards
+- Form validation
+- Confirmation dialogs
+- Empty states
+- Loading states
+- Error handling
+- Light and dark themes
+
+---
+
+## 📸 Screenshots
+
+Add your application screenshots inside the `screenshots/` directory.
+
+### Recommended Structure
+
+    screenshots/
+    ├── welcome.png
+    ├── login.png
+    ├── register.png
+    ├── home.png
+    ├── organizations.png
+    ├── needs.png
+    ├── donations.png
+    ├── sponsorship.png
+    ├── volunteering.png
+    ├── profile.png
+    └── dark-mode.png
+
+### Preview
+
+| Welcome | Home |
+|---|---|
+| ![Welcome](screenshots/welcome.png) | ![Home](screenshots/home.png) |
+
+| Organizations | Needs |
+|---|---|
+| ![Organizations](screenshots/organizations.png) | ![Needs](screenshots/needs.png) |
+
+| Donations | Sponsorship |
+|---|---|
+| ![Donations](screenshots/donations.png) | ![Sponsorship](screenshots/sponsorship.png) |
+
+| Volunteering | Profile |
+|---|---|
+| ![Volunteering](screenshots/volunteering.png) | ![Profile](screenshots/profile.png) |
+
+---
+
+## 🧪 Testing
+
+The project supports Flutter's testing framework.
+
+Run all tests with:
+
+    flutter test
+
+Static analysis can be performed with:
+
+    flutter analyze
+
+---
+
+## 🔮 Future Improvements
+
+- Advanced role-based Firestore security rules
+- Push notification integration
+- Advanced donation payment gateway
+- Online payment verification
+- Advanced volunteer statistics
+- Donation analytics dashboard
+- Sponsorship analytics
+- Organization verification system
+- Advanced search and filtering
+- Cloud-based reporting
+- Admin analytics dashboard
+- Improved automated testing
+- Performance optimization
+
+---
+
+## 📱 Supported Platforms
+
+The project is configured for multiple Flutter platforms:
+
+- Android
+- iOS
+- Web
+- Windows
+- macOS
+
+---
+
+## ⚠️ Disclaimer
+
+TinyWings is developed for educational, academic, and portfolio purposes.
+
+The application is a prototype and may require additional security, payment verification, moderation, and infrastructure improvements before being used as a production-grade philanthropic platform.
+
+---
+
+## 👨‍💻 Author
+
+### Abdullah Al Rafid
+
+**Computer Science & Engineering**  
+**Daffodil International University**
+
+- 🔗 GitHub: https://github.com/abdullah-al-rafid
+- 🔗 LinkedIn: https://www.linkedin.com/in/abdullah-al-rafid-228b03247/
+
+---
+
+## 📄 License
+
+This project is intended for educational and portfolio purposes.
+
+If you choose to reuse or modify the project, please provide appropriate attribution.
+
+---
+
+## ⭐ Support
+
+If you find this project interesting, consider giving the repository a ⭐ on GitHub.
