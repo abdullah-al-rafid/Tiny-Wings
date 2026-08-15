@@ -1,22 +1,41 @@
 {
   "project_info": {
-    "project_number": "78828122230",
-    "firebase_url": "https://tinywings-51743-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "tinywings-51743",
-    "storage_bucket": "tinywings-51743.firebasestorage.app"
+    "project_number": "666302061804",
+    "firebase_url": "https://tinywings-d6951-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "tinywings-d6951",
+    "storage_bucket": "tinywings-d6951.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:78828122230:android:1b52c14e4a5ed9fec1ef57",
+        "mobilesdk_app_id": "1:666302061804:android:6c76637d7068a9ce27d9c9",
         "android_client_info": {
-          "package_name": "com.example.tinywings"
+          "package_name": "com.example.tinywings_app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDg34VAtvwBrNSpJifx0938lx5HTFs5aFA"
+          "current_key": "AIzaSyAxduZlyyY1BO3bGhZzbP1wntOkC5yuxCM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:666302061804:android:d3987cac55243a4327d9c9",
+        "android_client_info": {
+          "package_name": "com.saymum.tinywings"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxduZlyyY1BO3bGhZzbP1wntOkC5yuxCM"
         }
       ],
       "services": {

@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/auth/auth_repository.dart';
 import '../providers/leaderboard_providers.dart';
 import '../widgets/premium_leaderboard_card.dart';
+import '../../../core/localization/app_localization.dart';
 
 class LeaderboardPage extends ConsumerStatefulWidget {
   const LeaderboardPage({super.key});
@@ -32,6 +33,7 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> with SingleTi
   Widget build(BuildContext context) {
     final leaderboardAsync = ref.watch(leaderboardProvider);
     final authData = ref.watch(authModelProvider);
+    final t = ref.watch(translationProvider);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -91,7 +93,7 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> with SingleTi
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
                 SliverAppBar(
-                  title: const Text('Top Contributors', style: TextStyle(color: Color(0xFF1E3A8A), fontWeight: FontWeight.bold)),
+                  title: Text(t['top_contributors']!, style: const TextStyle(color: Color(0xFF1E3A8A), fontWeight: FontWeight.bold)),
                   backgroundColor: Colors.white.withValues(alpha: 0.6),
                   foregroundColor: const Color(0xFF1E3A8A),
                   elevation: 0,
@@ -114,9 +116,9 @@ class _LeaderboardPageState extends ConsumerState<LeaderboardPage> with SingleTi
                       if (states.contains(WidgetState.pressed)) return const Color(0xFF3B82F6).withValues(alpha: 0.2);
                       return null;
                     }),
-                    tabs: const [
-                      Tab(text: 'All Time'),
-                      Tab(text: 'By Organization'),
+                    tabs: [
+                      Tab(text: t['all_time']!),
+                      Tab(text: t['by_org']!),
                     ],
                   ),
                 ),
@@ -191,7 +193,7 @@ class _LeaderboardList extends StatelessWidget {
   }
 }
 
-class _OrganizationLeaderboardTab extends StatefulWidget {
+class _OrganizationLeaderboardTab extends ConsumerStatefulWidget {
   final Map<String, List<LeaderboardEntry>> byOrganization;
   final String? currentUserId;
 
@@ -201,10 +203,10 @@ class _OrganizationLeaderboardTab extends StatefulWidget {
   });
 
   @override
-  State<_OrganizationLeaderboardTab> createState() => _OrganizationLeaderboardTabState();
+  ConsumerState<_OrganizationLeaderboardTab> createState() => _OrganizationLeaderboardTabState();
 }
 
-class _OrganizationLeaderboardTabState extends State<_OrganizationLeaderboardTab> {
+class _OrganizationLeaderboardTabState extends ConsumerState<_OrganizationLeaderboardTab> {
   String? selectedOrg;
   bool _isHovered = false;
 
@@ -267,8 +269,7 @@ class _OrganizationLeaderboardTabState extends State<_OrganizationLeaderboardTab
               value: selectedOrg,
               isExpanded: true,
               decoration: InputDecoration(
-                labelText: 'Select Organization',
-                labelStyle: const TextStyle(color: Color(0xFF1E3A8A)),
+                labelText: ref.watch(translationProvider)['select_org']!,
                 filled: true,
                 fillColor: _isHovered ? Colors.white.withValues(alpha: 0.8) : Colors.white.withValues(alpha: 0.6),
                 border: OutlineInputBorder(
@@ -317,6 +318,7 @@ class _CategoryFilterHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedType = ref.watch(leaderboardTypeProvider);
+    final t = ref.watch(translationProvider);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
@@ -328,7 +330,7 @@ class _CategoryFilterHeader extends ConsumerWidget {
         children: [
           Expanded(
             child: _FilterButton(
-              label: 'Total',
+              label: t['total']!,
               icon: Icons.star_border,
               isSelected: selectedType == LeaderboardType.total,
               onTap: () => ref.read(leaderboardTypeProvider.notifier).state = LeaderboardType.total,
@@ -337,7 +339,7 @@ class _CategoryFilterHeader extends ConsumerWidget {
           const SizedBox(width: 8),
           Expanded(
             child: _FilterButton(
-              label: 'Sponsors',
+              label: t['sponsors']!,
               icon: Icons.favorite_border,
               isSelected: selectedType == LeaderboardType.sponsor,
               onTap: () => ref.read(leaderboardTypeProvider.notifier).state = LeaderboardType.sponsor,
@@ -346,7 +348,7 @@ class _CategoryFilterHeader extends ConsumerWidget {
           const SizedBox(width: 8),
           Expanded(
             child: _FilterButton(
-              label: 'Donors',
+              label: t['donors']!,
               icon: Icons.volunteer_activism_outlined,
               isSelected: selectedType == LeaderboardType.donation,
               onTap: () => ref.read(leaderboardTypeProvider.notifier).state = LeaderboardType.donation,
@@ -448,6 +450,7 @@ class _TimeFilterHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedFilter = ref.watch(leaderboardFilterProvider);
+    final t = ref.watch(translationProvider);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -459,7 +462,7 @@ class _TimeFilterHeader extends ConsumerWidget {
         children: [
           const Icon(Icons.timer_outlined, size: 20, color: Color(0xFF1E3A8A)),
           const SizedBox(width: 8),
-          const Text('Period: ', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A))),
+          Text('${t['period']!}: ', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A))),
           const SizedBox(width: 8),
           Expanded(
             child: Container(

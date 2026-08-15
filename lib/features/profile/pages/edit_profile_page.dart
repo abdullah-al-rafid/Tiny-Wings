@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../providers/user_providers.dart';
 import '../data/user_repository.dart';
 import '../../../core/widgets/app_image.dart';
+import '../../../core/localization/app_localization.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
   const EditProfilePage({super.key});
@@ -37,18 +38,37 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    final user = ref.read(userProfileProvider).value;
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _phoneController = TextEditingController();
+    _bioController = TextEditingController();
+    _professionController = TextEditingController();
+    _skillsController = TextEditingController();
+    _addressController = TextEditingController();
+    _emergencyContactController = TextEditingController();
     
-    _nameController = TextEditingController(text: user?.name ?? '');
-    _emailController = TextEditingController(text: user?.email ?? '');
-    _phoneController = TextEditingController(text: user?.phone ?? '');
-    _bioController = TextEditingController(text: user?.bio ?? '');
-    _professionController = TextEditingController(text: user?.profession ?? '');
-    _skillsController = TextEditingController(text: user?.skills ?? '');
-    _addressController = TextEditingController(text: user?.address ?? '');
-    _emergencyContactController = TextEditingController(text: user?.emergencyPhone ?? '');
-    _selectedBloodGroup = user?.bloodGroup ?? 'O+';
-    _profilePictureUrl = user?.profilePictureUrl;
+    // Defer initialization to after the first frame to safely use ref.read
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeControllers();
+    });
+  }
+
+  void _initializeControllers() {
+    final user = ref.read(userProfileProvider).value;
+    if (user != null) {
+      setState(() {
+        _nameController.text = user.name;
+        _emailController.text = user.email;
+        _phoneController.text = user.phone;
+        _bioController.text = user.bio ?? '';
+        _professionController.text = user.profession ?? '';
+        _skillsController.text = user.skills ?? '';
+        _addressController.text = user.address ?? '';
+        _emergencyContactController.text = user.emergencyPhone ?? '';
+        _selectedBloodGroup = user.bloodGroup ?? 'O+';
+        _profilePictureUrl = user.profilePictureUrl;
+      });
+    }
   }
 
   @override
@@ -67,7 +87,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800, // Reasonable size for profile pic
+      imageQuality: 80, // Good compression
+    );
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
       setState(() {
@@ -116,7 +140,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       ref.invalidate(userProfileProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully!')),
+          SnackBar(content: Text(ref.watch(translationProvider)['successful_update']!)),
         );
         context.pop();
       }
@@ -133,9 +157,28 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = ref.watch(translationProvider);
+    final userAsync = ref.watch(userProfileProvider);
+
+    // If data arrives after initial build, populate controllers
+    userAsync.whenData((user) {
+      if (user != null && _nameController.text.isEmpty && _emailController.text.isEmpty) {
+        _nameController.text = user.name;
+        _emailController.text = user.email;
+        _phoneController.text = user.phone;
+        _bioController.text = user.bio ?? '';
+        _professionController.text = user.profession ?? '';
+        _skillsController.text = user.skills ?? '';
+        _addressController.text = user.address ?? '';
+        _emergencyContactController.text = user.emergencyPhone ?? '';
+        _selectedBloodGroup = user.bloodGroup ?? 'O+';
+        _profilePictureUrl = user.profilePictureUrl;
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: Text(t['edit_profile']!),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -186,11 +229,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               const SizedBox(height: 32),
               
               // --- Section: Basic Information ---
-              _buildSectionHeader('Basic Information'),
+              _buildSectionHeader(t['basic_information']!),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _nameController,
-                decoration: _inputDecoration('Full Name', Icons.person_outline),
+                decoration: _inputDecoration(t['full_name']!, Icons.person_outline),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Please enter your name';
                   return null;
@@ -199,51 +242,50 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _emailController,
-                decoration: _inputDecoration('Email Address', Icons.email_outlined),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please enter your email';
-                  return null;
-                },
+                decoration: _inputDecoration(t['email_address']!, Icons.email_outlined).copyWith(
+                  helperText: 'Email cannot be changed here for security',
+                ),
+                readOnly: true,
+                style: const TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _phoneController,
-                decoration: _inputDecoration('Phone Number', Icons.phone_outlined),
+                decoration: _inputDecoration(t['phone_number']!, Icons.phone_outlined),
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _bioController,
-                decoration: _inputDecoration('Bio', Icons.info_outline),
+                decoration: _inputDecoration(t['bio']!, Icons.info_outline),
                 maxLines: 3,
               ),
               const SizedBox(height: 32),
-
+              
               // --- Section: Professional & Skills ---
-              _buildSectionHeader('Professional & Skills'),
+              _buildSectionHeader(t['professional_skills']!),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _professionController,
-                decoration: _inputDecoration('Profession', Icons.work_outline),
+                decoration: _inputDecoration(t['profession']!, Icons.work_outline),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _skillsController,
                 decoration: _inputDecoration(
-                  'Volunteering Skills', 
+                  t['v_skills']!, 
                   Icons.star_outline,
                   'e.g. Teaching, First Aid, Event Planning',
                 ),
               ),
               const SizedBox(height: 32),
-
+              
               // --- Section: Location & Safety ---
-              _buildSectionHeader('Location & Safety'),
+              _buildSectionHeader(t['location_safety']!),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _addressController,
-                decoration: _inputDecoration('Full Address', Icons.location_on_outlined),
+                decoration: _inputDecoration(t['address']!, Icons.location_on_outlined),
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
@@ -252,7 +294,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       value: _selectedBloodGroup,
-                      decoration: _inputDecoration('Blood Group', Icons.bloodtype_outlined),
+                      decoration: _inputDecoration(t['blood_group']!, Icons.bloodtype_outlined),
                       items: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
                           .map((group) => DropdownMenuItem(
                                 value: group,
@@ -266,7 +308,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   Expanded(
                     child: TextFormField(
                       controller: _emergencyContactController,
-                      decoration: _inputDecoration('Emergency Phone', Icons.emergency_outlined),
+                      decoration: _inputDecoration(t['emergency_phone']!, Icons.emergency_outlined),
                       keyboardType: TextInputType.phone,
                     ),
                   ),
@@ -278,7 +320,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 const Center(child: CircularProgressIndicator())
               else
                 AppButton(
-                  text: 'Save Changes',
+                  text: t['save_changes']!,
                   onPressed: _saveProfile,
                 ),
               const SizedBox(height: 24),

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../models/donation_model.dart';
+import '../../../core/models/donation_model.dart';
 import '../providers/donation_providers.dart';
 
 class DonationHistoryPage extends ConsumerWidget {
@@ -614,3 +614,4 @@ class _DialogDetailRow extends StatelessWidget {
     );
   }
 }
+

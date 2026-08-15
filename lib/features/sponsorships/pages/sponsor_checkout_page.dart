@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_button.dart';
-import '../../../models/subscription_model.dart';
+import '../../../core/models/subscription_model.dart';
 import '../../../core/auth/auth_repository.dart';
 import '../data/sponsorship_repository.dart';
 import '../providers/sponsorship_providers.dart';
@@ -81,7 +81,7 @@ class _SponsorCheckoutPageState extends ConsumerState<SponsorCheckoutPage> {
       }
 
       ref.invalidate(userSubscriptionsProvider);
-      ref.invalidate(orgSponsorsProvider);
+      ref.invalidate(orgSponsorsProvider(widget.orgId));
       ref.invalidate(activeUserSubscriptionsProvider);
       ref.invalidate(orgSupportersProvider(widget.orgId));
 
@@ -110,9 +110,9 @@ class _SponsorCheckoutPageState extends ConsumerState<SponsorCheckoutPage> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.05),
+                color: AppColors.primary.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
               ),
               child: Column(
                 children: [
@@ -177,3 +177,4 @@ class _SponsorCheckoutPageState extends ConsumerState<SponsorCheckoutPage> {
     );
   }
 }
+

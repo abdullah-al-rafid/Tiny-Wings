@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_button.dart';
 import '../data/organization_repository.dart';
-import '../../../models/organization_model.dart';
+import '../../../core/models/organization_model.dart';
 import '../providers/organization_providers.dart';
 import '../../../core/widgets/app_image.dart';
 
@@ -113,7 +113,7 @@ class _EditOrganizationPageState extends ConsumerState<EditOrganizationPage> {
         phone: _phoneController.text,
         email: _emailController.text,
         imageUrl: imageUrl,
-        isVerified: _isVerified,
+        status: _isVerified ? VerificationStatus.verified : VerificationStatus.pending,
         isFeatured: _isFeatured,
         totalChildren: int.tryParse(_childrenController.text) ?? 0,
       );
@@ -263,3 +263,4 @@ class _EditOrganizationPageState extends ConsumerState<EditOrganizationPage> {
   }
 
 }
+

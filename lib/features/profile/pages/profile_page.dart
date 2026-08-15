@@ -7,9 +7,11 @@ import '../providers/user_impact_providers.dart';
 import '../../donations/providers/leaderboard_providers.dart';
 import '../../../core/auth/auth_repository.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../models/user_model.dart';
+import '../../../core/widgets/app_button.dart';
+import '../../../core/models/user_model.dart';
 import '../../../core/widgets/app_image.dart';
 import '../../sponsorships/providers/sponsorship_providers.dart';
+import '../../../core/localization/app_localization.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -18,6 +20,7 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfileAsync = ref.watch(userProfileProvider);
     final authData = ref.watch(authModelProvider);
+    final t = ref.watch(translationProvider);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -98,12 +101,12 @@ class ProfilePage extends ConsumerWidget {
                           children: [
                             const Icon(Icons.account_circle_outlined, size: 64, color: Color(0xFF9CA3AF)),
                             const SizedBox(height: 16),
-                            const Text('Login to see your profile',
-                                style: TextStyle(fontSize: 18, color: Color(0xFF4B5563))),
+                            Text(t['profile_login_prompt']!,
+                                style: const TextStyle(fontSize: 18, color: Color(0xFF4B5563))),
                             const SizedBox(height: 24),
                             ElevatedButton(
                               onPressed: () => context.go('/login'),
-                              child: const Text('Login'),
+                              child: Text(t['login']!),
                             ),
                           ],
                         ),
@@ -149,7 +152,7 @@ class ProfilePage extends ConsumerWidget {
                           const SizedBox(height: 32),
                           ElevatedButton(
                             onPressed: () => ref.invalidate(userProfileProvider),
-                            child: const Text('Try Again'),
+                            child: Text(t['try_again']!),
                           ),
                         ],
                       ],
@@ -166,7 +169,7 @@ class ProfilePage extends ConsumerWidget {
 
   Widget _buildProfileContent(BuildContext context, WidgetRef ref, UserModel user) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 140), // Increased bottom padding to 140
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -254,8 +257,8 @@ class ProfilePage extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              user.type,
-                              style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                              user.type?.toUpperCase() ?? 'DONOR',
+                              style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF), fontWeight: FontWeight.w600, letterSpacing: 0.5),
                             ),
                           ],
                         ),
@@ -266,7 +269,7 @@ class ProfilePage extends ConsumerWidget {
                   const SizedBox(height: 16),
                   // Edit Profile Button
                   _HoverableButton(
-                    label: 'Edit Profile',
+                    label: ref.watch(translationProvider)['edit_profile']!,
                     icon: Icons.edit_outlined,
                     onTap: () => context.push('/edit-profile'),
                   ),
@@ -278,18 +281,18 @@ class ProfilePage extends ConsumerWidget {
           const SizedBox(height: 18),
 
           // ── About Me ───────────────────────────────────────────
-          _SectionLabel(label: 'ABOUT ME'),
+          _SectionLabel(label: ref.watch(translationProvider)['about_me']!),
           const SizedBox(height: 10),
           _GlassCard(
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  _DetailRow(icon: Icons.phone_outlined, label: 'Phone', value: user.phone),
-                  _DetailRow(icon: Icons.work_outline_rounded, label: 'Profession', value: user.profession),
-                  _DetailRow(icon: Icons.star_outline_rounded, label: 'Skills', value: user.skills),
-                  _DetailRow(icon: Icons.location_on_outlined, label: 'Address', value: user.address),
-                  _DetailRow(icon: Icons.bloodtype_outlined, label: 'Blood Group', value: user.bloodGroup),
+                  _DetailRow(icon: Icons.phone_outlined, label: ref.watch(translationProvider)['phone']!, value: user.phone),
+                  _DetailRow(icon: Icons.work_outline_rounded, label: ref.watch(translationProvider)['profession']!, value: user.profession),
+                  _DetailRow(icon: Icons.star_outline_rounded, label: ref.watch(translationProvider)['skills']!, value: user.skills),
+                  _DetailRow(icon: Icons.location_on_outlined, label: ref.watch(translationProvider)['address']!, value: user.address),
+                  _DetailRow(icon: Icons.bloodtype_outlined, label: ref.watch(translationProvider)['blood_group']!, value: user.bloodGroup),
                   if (user.bio != null && user.bio!.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     Container(
@@ -315,7 +318,7 @@ class ProfilePage extends ConsumerWidget {
             const SizedBox(height: 18),
 
             // ── My Impact ──────────────────────────────────────────
-            _SectionLabel(label: 'MY IMPACT'),
+            _SectionLabel(label: ref.watch(translationProvider)['my_impact']!),
             const SizedBox(height: 10),
             ref.watch(userImpactProvider).when(
               data: (impact) {
@@ -326,7 +329,7 @@ class ProfilePage extends ConsumerWidget {
                     Expanded(
                       child: _ImpactStatCard(
                         val: '৳${impact.totalContributed.toStringAsFixed(0)}',
-                        label: 'Total Contribution',
+                        label: ref.watch(translationProvider)['total_contribution']!,
                         icon: Icons.volunteer_activism_rounded,
                         color: const Color(0xFF3B82F6),
                       ),
@@ -335,18 +338,18 @@ class ProfilePage extends ConsumerWidget {
                     Expanded(
                       child: _ImpactStatCard(
                         val: '$activeSubCount',
-                        label: 'Sponsorships',
+                        label: ref.watch(translationProvider)['sponsors']!,
                         icon: Icons.favorite_rounded,
                         color: const Color(0xFFEC4899),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: _ImpactStatCard(
                         val: '0',
-                        label: 'Volunteer Apps',
+                        label: ref.watch(translationProvider)['volunteer_apps']!,
                         icon: Icons.groups_rounded,
-                        color: Color(0xFF8B5CF6),
+                        color: const Color(0xFF8B5CF6),
                       ),
                     ),
                   ],
@@ -359,8 +362,30 @@ class ProfilePage extends ConsumerWidget {
 
           const SizedBox(height: 18),
 
+          // ── Role Specific Workstations ────────────────────────
+          if (user.isAdmin || user.role == UserRole.orphanageAdmin) ...[
+            _SectionLabel(label: 'WORKSTATION'),
+            const SizedBox(height: 10),
+            _GlassCard(
+              child: _ActionTile(
+                icon: user.isAdmin ? Icons.admin_panel_settings_rounded : Icons.business_center_rounded,
+                label: user.isAdmin ? 'Admin Control Center' : 'Manage Organization',
+                iconColor: const Color(0xFF1E3A8A),
+                iconBg: const Color(0xFFDBEAFE),
+                onTap: () {
+                  if (user.isAdmin) {
+                    context.push('/admin/control-center');
+                  } else if (user.assignedOrphanageId != null) {
+                    context.push('/organizations/${user.assignedOrphanageId}');
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 18),
+          ],
+
           // ── Quick Actions ──────────────────────────────────────
-          _SectionLabel(label: 'QUICK ACTIONS'),
+          _SectionLabel(label: ref.watch(translationProvider)['quick_actions']!),
           const SizedBox(height: 10),
           _GlassCard(
             child: Padding(
@@ -369,7 +394,7 @@ class ProfilePage extends ConsumerWidget {
                 children: [
                   _ActionTile(
                     icon: Icons.favorite_rounded,
-                    label: 'Donation History',
+                    label: ref.watch(translationProvider)['donation_history']!,
                     iconColor: const Color(0xFFEC4899),
                     iconBg: const Color(0xFFFDF2F8),
                     onTap: () => context.push('/donation-history'),
@@ -377,7 +402,7 @@ class ProfilePage extends ConsumerWidget {
                   Divider(height: 1, color: Colors.white.withValues(alpha: 0.8), indent: 58),
                   _ActionTile(
                     icon: Icons.handshake_rounded,
-                    label: 'My Sponsorships',
+                    label: ref.watch(translationProvider)['my_sponsorships']!,
                     iconColor: const Color(0xFF8B5CF6),
                     iconBg: const Color(0xFFF5F3FF),
                     onTap: () => context.push('/my-sponsorships'),
@@ -385,15 +410,15 @@ class ProfilePage extends ConsumerWidget {
                   Divider(height: 1, color: Colors.white.withValues(alpha: 0.8), indent: 58),
                   _ActionTile(
                     icon: Icons.calendar_today_rounded,
-                    label: 'My Applications',
+                    label: ref.watch(translationProvider)['my_applications']!,
                     iconColor: const Color(0xFF059669),
                     iconBg: const Color(0xFFECFDF5),
-                    onTap: () {},
+                    onTap: () => context.push('/my-applications'),
                   ),
                   Divider(height: 1, color: Colors.white.withValues(alpha: 0.8), indent: 58),
                   _ActionTile(
                     icon: Icons.settings_rounded,
-                    label: 'Settings',
+                    label: ref.watch(translationProvider)['settings']!,
                     iconColor: const Color(0xFF6B7280),
                     iconBg: const Color(0xFFF9FAFB),
                     onTap: () => context.push('/settings'),
@@ -787,7 +812,7 @@ class _RankBadge extends ConsumerWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: gradientColors.last.withOpacity(0.45),
+                    color: gradientColors.last.withValues(alpha: 0.45),
                     blurRadius: 12,
                     offset: const Offset(0, 5),
                   ),

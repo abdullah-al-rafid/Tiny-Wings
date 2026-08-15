@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/auth/auth_repository.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../models/user_model.dart';
+import '../../../core/models/user_model.dart';
 import '../../profile/providers/user_providers.dart';
 import '../../profile/data/user_repository.dart';
 
@@ -282,3 +282,4 @@ class _PrivacySettingsPageState extends ConsumerState<PrivacySettingsPage> {
     );
   }
 }
+

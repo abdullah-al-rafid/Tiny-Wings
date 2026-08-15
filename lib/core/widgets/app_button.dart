@@ -85,7 +85,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withAlpha(77), // 0.3 * 255
+              color: AppColors.primary.withValues(alpha: 0.3), 
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -105,7 +105,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.coral.withAlpha(77), // 0.3 * 255
+              color: AppColors.coral.withValues(alpha: 0.3), 
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -116,7 +116,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
 
     if (widget.onPressed == null) {
       decoration = BoxDecoration(
-        color: AppColors.border.withOpacity(0.5),
+        color: AppColors.border.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
       );
       border = null;
@@ -127,7 +127,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
       if (currentShadows != null && currentShadows.isNotEmpty) {
          currentShadows = [
             BoxShadow(
-              color: currentShadows.first.color.withAlpha((currentShadows.first.color.alpha + 50).clamp(0, 255)),
+              color: currentShadows.first.color.withValues(alpha: (currentShadows.first.color.a + 0.2).clamp(0.0, 1.0)),
               blurRadius: currentShadows.first.blurRadius + 4,
               offset: Offset(0, currentShadows.first.offset.dy + 2),
             )
@@ -135,7 +135,7 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
       } else {
          currentShadows = [
             BoxShadow(
-               color: AppColors.primary.withAlpha(50),
+               color: AppColors.primary.withValues(alpha: 0.2),
                blurRadius: 10,
                offset: const Offset(0, 4),
             )

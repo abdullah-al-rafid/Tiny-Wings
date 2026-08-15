@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/support_repository.dart';
 import '../../profile/providers/user_providers.dart';
-import '../../../models/support_ticket_model.dart';
+import '../../../core/models/support_ticket_model.dart';
 
 final userTicketsProvider = FutureProvider<List<SupportTicket>>((ref) async {
   final user = ref.watch(userProfileProvider).value;
@@ -23,3 +23,4 @@ final unreadAdminTicketsCountProvider = Provider<int>((ref) {
   final tickets = ref.watch(allAdminTicketsProvider).value ?? [];
   return tickets.where((t) => !t.isReadByAdmin).length;
 });
+

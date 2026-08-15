@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/auth/auth_repository.dart';
 import '../providers/support_providers.dart';
+import '../../../core/localization/app_localization.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -134,6 +135,27 @@ class SettingsPage extends ConsumerWidget {
                         ]),
 
                         const SizedBox(height: 28),
+
+                        // Preferences Section
+                        _buildSectionHeader('PREFERENCES'),
+                        const SizedBox(height: 10),
+                        _GlassSettingsGroup(tiles: [
+                          _SettingsTile(
+                            icon: Icons.translate_rounded,
+                            label: 'Language',
+                            iconColor: const Color(0xFFF59E0B),
+                            iconBg: const Color(0xFFFFFBEB),
+                            trailing: Text(
+                              ref.watch(languageProvider) == AppLanguage.english ? 'English' : 'বাংলা',
+                              style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFF59E0B)),
+                            ),
+                            onTap: () {
+                              ref.read(languageProvider.notifier).update((s) => 
+                                s == AppLanguage.english ? AppLanguage.bangla : AppLanguage.english
+                              );
+                            },
+                          ),
+                        ]),
 
                         const SizedBox(height: 28),
 

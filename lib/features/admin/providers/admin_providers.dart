@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../donations/data/donation_repository.dart';
 import '../../profile/data/user_repository.dart';
-import '../../../models/donation_model.dart';
-import '../../../models/user_model.dart';
+import '../../../core/models/donation_model.dart';
+import '../../../core/models/user_model.dart';
 
 final allUsersProvider = FutureProvider<List<UserModel>>((ref) async {
   final repository = ref.watch(userRepositoryProvider);
@@ -64,3 +64,4 @@ final adminStatsProvider = Provider<AsyncValue<AdminStats>>((ref) {
 });
 
 final selectedCategoryProvider = StateProvider<String>((ref) => 'Food');
+

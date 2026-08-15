@@ -7,8 +7,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../profile/providers/user_providers.dart';
 import '../data/support_repository.dart';
 import '../providers/support_providers.dart';
-import '../../../models/support_ticket_model.dart';
-import '../../../models/user_model.dart';
+import '../../../core/models/support_ticket_model.dart';
+import '../../../core/models/user_model.dart';
+import '../../../core/localization/app_localization.dart';
 
 class HelpSupportPage extends ConsumerStatefulWidget {
   const HelpSupportPage({super.key});
@@ -102,7 +103,7 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
 
 
   Future<void> _launchEmail() async {
-    final String email = 'admin@tinywings.com';
+    final String email = 'admin@gmail.com';
     final String subject = '[$_selectedCategory] ${_subjectController.text}';
     final String body = _messageController.text;
     
@@ -207,12 +208,13 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
   }
 
   Widget _buildFAQSection() {
+    final t = ref.watch(translationProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Frequently Asked Questions',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
+        Text(
+          t['faq_title']!,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
         ),
         const SizedBox(height: 16),
         ..._faqs.map((faq) => _buildFAQTile(faq['q']!, faq['a']!)),
@@ -262,9 +264,9 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Send us a message',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
+            Text(
+              ref.watch(translationProvider)['send_message']!,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
             ),
             const SizedBox(height: 4),
             Text(
@@ -279,14 +281,14 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
             
             _buildTextField(
               controller: _subjectController,
-              label: 'Subject',
+              label: ref.watch(translationProvider)['subject']!,
               hint: 'What is this about?',
               validator: (v) => v!.isEmpty ? 'Please enter a subject' : null,
             ),
             const SizedBox(height: 16),
             _buildTextField(
               controller: _messageController,
-              label: 'Message',
+              label: ref.watch(translationProvider)['message_label']!,
               hint: 'Tell us more...',
               maxLines: 4,
               validator: (v) => v!.isEmpty ? 'Please enter your message' : null,
@@ -304,7 +306,7 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
               ),
               child: _isSubmitting 
                 ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Submit Feedback', style: TextStyle(fontWeight: FontWeight.bold)),
+                : Text(ref.watch(translationProvider)['submit_feedback']!, style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -313,10 +315,11 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
   }
 
   Widget _buildDropdown() {
+    final t = ref.watch(translationProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Category', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E3A8A))),
+        Text(t['category']!, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E3A8A))),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -371,14 +374,15 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
   }
 
   Widget _buildHistorySection() {
+    final t = ref.watch(translationProvider);
     final ticketsAsync = ref.watch(userTicketsProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'My Messages & Responses',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
+        Text(
+          t['my_messages']!,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
         ),
         const SizedBox(height: 16),
         ticketsAsync.when(
@@ -490,3 +494,4 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
     return '${date.day}/${date.month}/${date.year}';
   }
 }
+

@@ -1,12 +1,39 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/subscription_model.dart';
-import '../../../models/donation_model.dart';
-import '../../../models/supporter_model.dart';
+import '../../../core/models/subscription_model.dart';
+import '../../../core/models/donation_model.dart';
+import '../../../core/models/supporter_model.dart';
+import '../../../core/models/child_sponsorship_model.dart';
 import '../data/sponsorship_repository.dart';
 import '../../donations/data/donation_repository.dart';
 import '../../../core/auth/auth_repository.dart';
 
 import '../../profile/data/user_repository.dart';
+
+final childSponsorshipsProvider = FutureProvider<List<ChildSponsorship>>((ref) {
+  return ref.watch(sponsorshipRepositoryProvider).getChildSponsorships();
+});
+
+final childSponsorshipActionsProvider = Provider((ref) {
+  final repository = ref.watch(sponsorshipRepositoryProvider);
+  return ChildSponsorshipActions(ref, repository);
+});
+
+class ChildSponsorshipActions {
+  final Ref _ref;
+  final SponsorshipRepository _repository;
+
+  ChildSponsorshipActions(this._ref, this._repository);
+
+  Future<void> saveChildSponsorship(ChildSponsorship child) async {
+    await _repository.saveChildSponsorship(child);
+    _ref.invalidate(childSponsorshipsProvider);
+  }
+
+  Future<void> deleteChildSponsorship(String id) async {
+    await _repository.deleteChildSponsorship(id);
+    _ref.invalidate(childSponsorshipsProvider);
+  }
+}
 
 final orgSponsorsProvider = FutureProvider.family<List<Subscription>, String>((ref, orgId) {
   return ref.watch(sponsorshipRepositoryProvider).getOrgSponsors(orgId);
@@ -101,3 +128,4 @@ final activeUserSubscriptionsProvider = FutureProvider<List<Subscription>>((ref)
 final allSubscriptionsProvider = FutureProvider<List<Subscription>>((ref) {
   return ref.watch(sponsorshipRepositoryProvider).getAllSubscriptions();
 });
+

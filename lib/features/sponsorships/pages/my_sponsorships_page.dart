@@ -7,7 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_button.dart';
 import '../providers/sponsorship_providers.dart';
 import '../data/sponsorship_repository.dart';
-import '../../../models/subscription_model.dart';
+import '../../../core/models/subscription_model.dart';
 
 class MySponsorshipsPage extends ConsumerStatefulWidget {
   const MySponsorshipsPage({super.key});
@@ -844,4 +844,5 @@ class _PaymentButtonState extends State<_PaymentButton> {
     );
   }
 }
+
 

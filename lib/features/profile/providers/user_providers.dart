@@ -1,28 +1,30 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/auth/auth_repository.dart';
 import '../data/user_repository.dart';
-import '../../../models/user_model.dart';
+import '../../../core/models/user_model.dart';
 
-final userProfileProvider = FutureProvider<UserModel?>((ref) async {
+final userProfileProvider = StreamProvider<UserModel?>((ref) {
   final authData = ref.watch(authModelProvider);
-  if (authData == null) return null;
+  if (authData == null) return Stream.value(null);
 
   final repository = ref.watch(userRepositoryProvider);
-  try {
-    final profile = await repository.getUserProfile(authData.uid);
-    if (profile != null) return profile;
-  } catch (e) {
-    // If permission denied or other error, fallback to basic info
-    print('Error fetching profile: $e');
-  }
+  return repository.watchUserProfile(authData.uid).map((profile) {
+    if (profile != null) {
+      if (profile.status == 'suspended') {
+        throw Exception('ACCOUNT_SUSPENDED');
+      }
+      return profile;
+    }
 
-  // Fallback to basic info from auth
-  final isAdmin = authData.email == 'admin@tinywings.com';
-  return UserModel(
-    uid: authData.uid,
-    email: authData.email,
-    name: isAdmin ? 'Admin' : '',
-    phone: '',
-    type: isAdmin ? 'Admin' : 'Donor',
-  );
+    // Fallback to basic info from auth
+    final isAdmin = authData.email == 'admin@gmail.com';
+    return UserModel(
+      uid: authData.uid,
+      email: authData.email,
+      name: isAdmin ? 'Admin' : '',
+      phone: '',
+      role: isAdmin ? UserRole.admin : UserRole.donor,
+    );
+  });
 });
+

@@ -2,10 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/auth/auth_repository.dart';
-import '../../profile/data/user_repository.dart';
+import '../../../core/auth/auth_repository.dart';
 import '../../profile/providers/user_providers.dart';
-import '../../../../core/widgets/app_button.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -16,8 +14,8 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailOrPhoneController = TextEditingController(text: 'afiq@gmail.com');
-  final _passwordController = TextEditingController(text: '123456');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController(text: '');
 
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -26,24 +24,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
-        String identifier = _emailOrPhoneController.text.trim();
+        final email = _emailController.text.trim();
         final password = _passwordController.text;
-        
-        // Clean the identifier (remove all spaces and +) for phone check
-        final cleanedIdentifier = identifier.replaceAll(RegExp(r'[^0-9]'), '');
-        
-        // If it looks like a phone number (more than 6 digits)
-        if (cleanedIdentifier.length >= 7 && RegExp(r'^[0-9]+$').hasMatch(cleanedIdentifier)) {
-          final mappedEmail = await ref.read(userRepositoryProvider).getEmailByPhone(cleanedIdentifier);
-          if (mappedEmail != null) {
-            identifier = mappedEmail;
-          } else {
-             throw 'No account found with this phone number';
-          }
-        }
 
-        await ref.read(authRepositoryProvider).signInWithEmailAndPassword(identifier, password);
-        
+        await ref
+            .read(authRepositoryProvider)
+            .signInWithEmailAndPassword(email, password);
+
         // Invalidate to fetch fresh profile data
         ref.invalidate(userProfileProvider);
 
@@ -52,9 +39,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(e.toString())));
         }
       } finally {
         if (mounted) {
@@ -66,7 +53,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   void dispose() {
-    _emailOrPhoneController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -81,7 +68,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             child: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFFE0E7FF), Color(0xFFF3E8FF), Color(0xFFFFFFFF)],
+                  colors: [
+                    Color(0xFFE0E7FF),
+                    Color(0xFFF3E8FF),
+                    Color(0xFFFFFFFF),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -97,7 +88,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF93C5FD).withOpacity(0.4),
+                color: const Color(0xFF93C5FD).withValues(alpha: 0.4),
               ),
             ),
           ),
@@ -109,7 +100,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               height: 250,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFD8B4FE).withOpacity(0.4),
+                color: const Color(0xFFD8B4FE).withValues(alpha: 0.4),
               ),
             ),
           ),
@@ -120,7 +111,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: const SizedBox(),
             ),
           ),
-          
+
           SafeArea(
             child: Column(
               children: [
@@ -130,7 +121,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Color(0xFF4B5563)),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF4B5563),
+                      ),
                       onPressed: () => context.pop(),
                     ),
                   ),
@@ -148,12 +142,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             child: Container(
                               padding: const EdgeInsets.all(32.0),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.75),
+                                color: Colors.white.withValues(alpha: 0.75),
                                 borderRadius: BorderRadius.circular(24),
-                                border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.6),
+                                  width: 1.5,
+                                ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
+                                    color: Colors.black.withValues(alpha: 0.05),
                                     blurRadius: 30,
                                     offset: const Offset(0, 10),
                                   ),
@@ -163,7 +160,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 key: _formKey,
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
                                     const Text(
                                       'Welcome Back',
@@ -187,22 +185,31 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     ),
                                     const SizedBox(height: 40),
                                     TextFormField(
-                                      controller: _emailOrPhoneController,
+                                      controller: _emailController,
                                       keyboardType: TextInputType.emailAddress,
-                                      style: const TextStyle(fontWeight: FontWeight.w500),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                       decoration: InputDecoration(
-                                        labelText: 'Email Address / Phone',
-                                        prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF6B7280)),
+                                        hintText: 'Enter your email',
+                                        prefixIcon: const Icon(
+                                          Icons.email_outlined,
+                                          color: Color(0xFF6B7280),
+                                        ),
                                         filled: true,
-                                        fillColor: Colors.white.withOpacity(0.8),
+                                        fillColor: Colors.white.withValues(alpha: 
+                                          0.8,
+                                        ),
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Please enter your email or phone number';
+                                          return 'Please enter your email';
                                         }
                                         return null;
                                       },
@@ -211,21 +218,35 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     TextFormField(
                                       controller: _passwordController,
                                       obscureText: _obscurePassword,
-                                      style: const TextStyle(fontWeight: FontWeight.w500),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                       decoration: InputDecoration(
-                                        labelText: 'Password',
-                                        prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF6B7280)),
+                                        hintText: 'Enter your password',
+                                        prefixIcon: const Icon(
+                                          Icons.lock_outline,
+                                          color: Color(0xFF6B7280),
+                                        ),
                                         suffixIcon: IconButton(
                                           icon: Icon(
-                                            _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                                            _obscurePassword
+                                                ? Icons.visibility_outlined
+                                                : Icons.visibility_off_outlined,
                                             color: const Color(0xFF6B7280),
                                           ),
-                                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                          onPressed: () => setState(
+                                            () => _obscurePassword =
+                                                !_obscurePassword,
+                                          ),
                                         ),
                                         filled: true,
-                                        fillColor: Colors.white.withOpacity(0.8),
+                                        fillColor: Colors.white.withValues(alpha: 
+                                          0.8,
+                                        ),
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
@@ -241,30 +262,46 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                       alignment: Alignment.centerRight,
                                       child: TextButton(
                                         onPressed: () {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('Forgot password logic goes here.'))
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Forgot password logic goes here.',
+                                              ),
+                                            ),
                                           );
                                         },
                                         style: TextButton.styleFrom(
-                                          foregroundColor: const Color(0xFF3B82F6),
+                                          foregroundColor: const Color(
+                                            0xFF3B82F6,
+                                          ),
                                         ),
                                         child: const Text(
                                           'Forgot Password?',
-                                          style: TextStyle(fontWeight: FontWeight.w600),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
                                     ),
                                     const SizedBox(height: 24),
                                     if (_isLoading)
-                                      const Center(child: CircularProgressIndicator())
+                                      const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
                                     else
                                       Container(
                                         height: 56,
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(30),
+                                          borderRadius: BorderRadius.circular(
+                                            30,
+                                          ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(0xFF3B82F6).withOpacity(0.3),
+                                              color: const Color(
+                                                0xFF3B82F6,
+                                              ).withValues(alpha: 0.3),
                                               blurRadius: 12,
                                               offset: const Offset(0, 4),
                                             ),
@@ -273,10 +310,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         child: ElevatedButton(
                                           onPressed: _handleLogin,
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFF3B82F6),
+                                            backgroundColor: const Color(
+                                              0xFF3B82F6,
+                                            ),
                                             foregroundColor: Colors.white,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(30),
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
                                             ),
                                             elevation: 0,
                                           ),
@@ -292,20 +332,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                       ),
                                     const SizedBox(height: 24),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         const Text(
                                           "Don't have an account?",
-                                          style: TextStyle(color: Color(0xFF4B5563), fontWeight: FontWeight.w500),
+                                          style: TextStyle(
+                                            color: Color(0xFF4B5563),
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                         ),
                                         TextButton(
-                                          onPressed: () => context.push('/register'),
+                                          onPressed: () =>
+                                              context.push('/register'),
                                           style: TextButton.styleFrom(
-                                            foregroundColor: const Color(0xFF3B82F6),
+                                            foregroundColor: const Color(
+                                              0xFF3B82F6,
+                                            ),
                                           ),
                                           child: const Text(
                                             'Register',
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ],

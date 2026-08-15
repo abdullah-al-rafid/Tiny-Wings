@@ -1,15 +1,17 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/localization/app_localization.dart';
 
-class WelcomePage extends StatefulWidget {
+class WelcomePage extends ConsumerStatefulWidget {
   const WelcomePage({super.key});
 
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
+  ConsumerState<WelcomePage> createState() => _WelcomePageState();
 }
 
-class _WelcomePageState extends State<WelcomePage> with TickerProviderStateMixin {
+class _WelcomePageState extends ConsumerState<WelcomePage> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -61,7 +63,7 @@ class _WelcomePageState extends State<WelcomePage> with TickerProviderStateMixin
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF93C5FD).withOpacity(0.4),
+                color: const Color(0xFF93C5FD).withValues(alpha: 0.4),
               ),
             ),
           ),
@@ -73,7 +75,7 @@ class _WelcomePageState extends State<WelcomePage> with TickerProviderStateMixin
               height: 250,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFD8B4FE).withOpacity(0.4),
+                color: const Color(0xFFD8B4FE).withValues(alpha: 0.4),
               ),
             ),
           ),
@@ -102,12 +104,12 @@ class _WelcomePageState extends State<WelcomePage> with TickerProviderStateMixin
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 48.0),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.75),
+                              color: Colors.white.withValues(alpha: 0.75),
                               borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1.5),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withValues(alpha: 0.05),
                                   blurRadius: 30,
                                   offset: const Offset(0, 10),
                                 ),
@@ -120,10 +122,10 @@ class _WelcomePageState extends State<WelcomePage> with TickerProviderStateMixin
                               children: [
                                 const Center(child: _AnimatedLogo()),
                                 const SizedBox(height: 32),
-                                const Text(
-                                  'TinyWings',
+                                Text(
+                                  ref.watch(translationProvider)['welcome_title']!,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.w800,
                                     color: Color(0xFF1E3A8A),
@@ -131,10 +133,10 @@ class _WelcomePageState extends State<WelcomePage> with TickerProviderStateMixin
                                   ),
                                 ),
                                 const SizedBox(height: 16),
-                                const Text(
-                                  'Connect, Care, and Support children in need',
+                                Text(
+                                  ref.watch(translationProvider)['welcome_subtitle']!,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     height: 1.5,
                                     color: Color(0xFF4B5563),
@@ -143,13 +145,13 @@ class _WelcomePageState extends State<WelcomePage> with TickerProviderStateMixin
                                 ),
                                 const SizedBox(height: 48),
                                 _AnimatedHoverButton(
-                                  text: 'Login',
+                                  text: ref.watch(translationProvider)['login']!,
                                   isPrimary: true,
                                   onPressed: () => context.push('/login'),
                                 ),
                                 const SizedBox(height: 16),
                                 _AnimatedHoverButton(
-                                  text: 'Register',
+                                  text: ref.watch(translationProvider)['register']!,
                                   isPrimary: false,
                                   onPressed: () => context.push('/register'),
                                 ),
@@ -220,14 +222,14 @@ class _AnimatedHoverButtonState extends State<_AnimatedHoverButton> {
                       end: Alignment.centerRight,
                     )
                   : null,
-              color: widget.isPrimary ? null : Colors.white.withOpacity(0.8),
+              color: widget.isPrimary ? null : Colors.white.withValues(alpha: 0.8),
               border: widget.isPrimary
                   ? null
-                  : Border.all(color: const Color(0xFF3B82F6).withOpacity(0.5), width: 2),
+                  : Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.5), width: 2),
               boxShadow: [
                 if (widget.isPrimary)
                   BoxShadow(
-                    color: const Color(0xFF3B82F6).withOpacity(_isHovered ? 0.4 : 0.2),
+                    color: const Color(0xFF3B82F6).withValues(alpha: _isHovered ? 0.4 : 0.2),
                     blurRadius: elevation * 2,
                     offset: Offset(0, elevation),
                   ),
@@ -322,7 +324,7 @@ class _AnimatedLogoState extends State<_AnimatedLogo> with TickerProviderStateMi
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3B82F6).withOpacity(0.3),
+            color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

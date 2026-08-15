@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../models/user_model.dart';
-import '../../../models/donation_model.dart';
+import '../../../core/models/user_model.dart';
+import '../../../core/models/donation_model.dart';
 import '../../profile/data/user_repository.dart';
 import '../data/donation_repository.dart';
 import '../../sponsorships/data/sponsorship_repository.dart';
-import '../../../models/subscription_model.dart';
+import '../../../core/models/subscription_model.dart';
 import '../../../core/auth/auth_repository.dart';
 
 enum LeaderboardFilter { allTime, twoDays, fiveDays }
@@ -164,3 +164,4 @@ final leaderboardProvider = FutureProvider<LeaderboardData>((ref) async {
 
   return LeaderboardData(allTime: allTimeEntries, byOrganization: byOrganization);
 });
+

@@ -11,18 +11,44 @@ class PendingNeedsPage extends ConsumerWidget {
 
   Future<void> _updateStatus(BuildContext context, WidgetRef ref, String id, String status) async {
     try {
-      final repository = ref.read(needRepositoryProvider);
-      await repository.updateNeedStatus(id, status);
-      ref.invalidate(pendingNeedsProvider);
-      ref.invalidate(approvedNeedsProvider);
-      ref.invalidate(needsByOrgProvider);
-      
+      await ref.read(needActionsProvider).updateNeedStatus(id, status);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Need $status!')));
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
+  }
+
+  Future<void> _deleteNeed(BuildContext context, WidgetRef ref, String id, String title) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Need'),
+        content: Text('Are you sure you want to delete "$title"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await ref.read(needActionsProvider).deleteNeed(id);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Need deleted!')));
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
       }
     }
   }
@@ -52,7 +78,16 @@ class PendingNeedsPage extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(need.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(child: Text(need.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18))),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: Colors.red),
+                              onPressed: () => _deleteNeed(context, ref, need.id, need.title),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 8),
                         Text('Org: ${need.organizationName ?? 'Unknown'}', style: const TextStyle(color: AppColors.textSecondary)),
                         Text('Category: ${need.category}'),

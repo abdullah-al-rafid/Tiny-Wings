@@ -7,14 +7,16 @@ import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_button.dart';
 import '../providers/organization_providers.dart';
 import '../../needs/providers/need_providers.dart';
-import '../../../models/organization_model.dart';
-import '../../../models/need_model.dart';
-import '../../../models/subscription_model.dart';
-import '../../../models/supporter_model.dart';
+import '../../../core/models/organization_model.dart';
+import '../../../core/models/need_model.dart';
+import '../../../core/models/subscription_model.dart';
+import '../../../core/models/supporter_model.dart';
 import '../../../core/widgets/app_image.dart';
 import '../../sponsorships/providers/sponsorship_providers.dart';
-import '../../../core/auth/auth_repository.dart';
 import '../widgets/sponsorship_tier_card.dart';
+import '../../profile/providers/user_providers.dart';
+import '../../../core/models/user_model.dart';
+import '../../../core/auth/auth_repository.dart';
 
 class OrganizationDetailsPage extends ConsumerWidget {
   final String organizationId;
@@ -31,6 +33,8 @@ class OrganizationDetailsPage extends ConsumerWidget {
     final supportersAsync = ref.watch(orgSupportersProvider(organizationId));
     final sponsorsAsync = ref.watch(orgSponsorsProvider(organizationId));
     final authData = ref.watch(authModelProvider);
+    final user = ref.watch(userProfileProvider).value;
+    final isManager = user != null && (user.isAdmin || (user.role == UserRole.orphanageAdmin && user.assignedOrphanageId == organizationId));
 
     return Scaffold(
       appBar: AppBar(
@@ -46,7 +50,7 @@ class OrganizationDetailsPage extends ConsumerWidget {
           final supportersList = supportersAsync.value ?? [];
           final activeSubs = (sponsorsAsync.value ?? []).where((s) => s.status == 'active').toList();
           
-          return _buildContent(context, org, activeNeeds, supportersList, activeSubs, authData?.uid);
+          return _buildContent(context, org, activeNeeds, supportersList, activeSubs, authData?.uid, isManager);
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text('Error: $error')),
@@ -55,7 +59,7 @@ class OrganizationDetailsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, Organization org, List<Need> needs, List<Supporter> supporters, List<Subscription> activeSubscriptions, String? currentUserId) {
+  Widget _buildContent(BuildContext context, Organization org, List<Need> needs, List<Supporter> supporters, List<Subscription> activeSubscriptions, String? currentUserId, bool isManager) {
     
     bool isCurrentUserSponsor = currentUserId != null && activeSubscriptions.any((s) => s.donorId == currentUserId);
 
@@ -81,6 +85,35 @@ class OrganizationDetailsPage extends ConsumerWidget {
                   )
                 : const Icon(Icons.image, size: 64, color: AppColors.textSecondary),
           ),
+
+          if (isManager) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              color: const Color(0xFF1E3A8A),
+              child: Row(
+                children: [
+                   const Icon(Icons.admin_panel_settings_rounded, color: Colors.white, size: 20),
+                   const SizedBox(width: 12),
+                   const Text(
+                     'MANAGEMENT CONTROLS',
+                     style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.2),
+                   ),
+                   const Spacer(),
+                   TextButton.icon(
+                     onPressed: () => context.push('/admin/edit-organization/${org.id}'),
+                     icon: const Icon(Icons.edit, color: Colors.white, size: 16),
+                     label: const Text('Edit Info', style: TextStyle(color: Colors.white, fontSize: 12)),
+                   ),
+                   const SizedBox(width: 8),
+                   TextButton.icon(
+                     onPressed: () => context.push('/admin/add-need'),
+                     icon: const Icon(Icons.add_circle, color: Colors.white, size: 16),
+                     label: const Text('Post Need', style: TextStyle(color: Colors.white, fontSize: 12)),
+                   ),
+                ],
+              ),
+            ),
+          ],
           Padding(
             padding: EdgeInsets.all(AppTheme.spacing),
             child: Column(

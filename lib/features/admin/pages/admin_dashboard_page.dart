@@ -5,6 +5,17 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_card.dart';
 import '../providers/admin_providers.dart';
 import '../../settings/providers/support_providers.dart';
+import '../../../core/services/db_initializer.dart';
+import '../../organizations/data/organization_repository.dart';
+import '../../profile/data/user_repository.dart';
+import '../../needs/data/need_repository.dart';
+import '../../volunteering/data/volunteer_repository.dart';
+import '../../donations/data/donation_repository.dart';
+import '../../volunteering/data/application_repository.dart';
+import '../../notifications/data/notification_repository.dart';
+import '../../../core/api/firebase_providers.dart';
+import '../../settings/data/support_repository.dart';
+import '../../sponsorships/data/sponsorship_repository.dart';
 
 class AdminDashboardPage extends ConsumerStatefulWidget {
   const AdminDashboardPage({super.key});
@@ -16,6 +27,40 @@ class AdminDashboardPage extends ConsumerStatefulWidget {
 class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
   String selectedCategory = 'Food';
   final List<String> categories = ['Food', 'Clothing', 'Toys', 'Books', 'Medical', 'Other'];
+  bool _isSeeding = false;
+
+  Future<void> _handleSeed() async {
+    setState(() => _isSeeding = true);
+    try {
+      final seeder = DatabaseInitializer(
+        orgRepo: ref.read(organizationRepositoryProvider),
+        userRepo: ref.read(userRepositoryProvider),
+        needRepo: ref.read(needRepositoryProvider),
+        volunteerRepo: ref.read(volunteerRepositoryProvider),
+        donationRepo: ref.read(donationRepositoryProvider),
+        applicationRepo: ref.read(applicationRepositoryProvider),
+        notificationRepo: ref.read(notificationRepositoryProvider),
+        sponsorshipRepo: ref.read(sponsorshipRepositoryProvider),
+        supportRepo: ref.read(supportRepositoryProvider),
+        firestore: ref.read(firestoreProvider),
+      );
+      await seeder.initializeProductionData();
+      ref.invalidate(adminStatsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Production Database Initialized!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Seeding failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSeeding = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +92,7 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                 icon: Icons.business_outlined,
                 title: 'Add Organization',
                 subtitle: 'Create a new orphanage or charity profile',
-                onTap: () => context.pushNamed('add-organization'),
+                onTap: () => context.push('/admin/add-organization'),
               ),
               const SizedBox(height: 12),
               _buildAdminAction(
@@ -73,6 +118,13 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
               ),
               const SizedBox(height: 12),
               _buildAdminAction(
+                icon: Icons.assignment_ind_outlined,
+                title: 'Verify Org Applications',
+                subtitle: 'Review new orphanage/volunteer group signups',
+                onTap: () => context.push('/admin/verify-organizations'),
+              ),
+              const SizedBox(height: 12),
+              _buildAdminAction(
                 icon: Icons.report_problem_outlined,
                 title: 'Pending Needs',
                 subtitle: 'Review and approve organization needs',
@@ -86,7 +138,53 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                 badgeCount: feedbackCount,
                 onTap: () => context.push('/admin/feedback'),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
+              
+              _buildSectionHeader('Sponsorship & Circulars'),
+              const SizedBox(height: 16),
+              _buildAdminAction(
+                icon: Icons.child_care_rounded,
+                title: 'Add Child Profile',
+                subtitle: 'Post a new sponsorship circular for a child',
+                onTap: () => context.push('/sponsorships/add-child'),
+              ),
+              const SizedBox(height: 12),
+              _buildAdminAction(
+                icon: Icons.assignment_rounded,
+                title: 'Manage Volunteer Circulars',
+                subtitle: 'Edit or remove existing volunteer opportunities',
+                onTap: () => context.push('/opportunity-board'),
+              ),
+              const SizedBox(height: 32),
+              
+              _buildSectionHeader('System Tools'),
+              const SizedBox(height: 16),
+              AppCard(
+                onTap: _isSeeding ? null : _handleSeed,
+                child: Row(
+                  children: [
+                    Icon(Icons.auto_awesome, color: Colors.purple.shade400),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Initialize Production Data', style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(
+                            'Replace existing data with authentic Bangladeshi entities',
+                            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_isSeeding)
+                      const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    else
+                      Icon(Icons.play_arrow, color: Colors.grey.shade400),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 60),
             ],
           ),
         );

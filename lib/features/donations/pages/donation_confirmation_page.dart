@@ -1,7 +1,7 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_button.dart';
 
 class DonationConfirmationPage extends StatelessWidget {
@@ -10,64 +10,123 @@ class DonationConfirmationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(AppTheme.spacing * 2),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              Center(
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check_circle,
-                    color: AppColors.primary,
-                    size: 60,
-                  ),
+      body: Stack(
+        children: [
+          // Background Gradient
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFE0E7FF), Color(0xFFF3E8FF), Color(0xFFFFFFFF)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
               ),
-              const SizedBox(height: 32),
-              Text(
-                'Thank You!',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Your generous contribution has been recorded. It will make a huge difference in someone\'s life.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textSecondary,
-                  height: 1.5,
-                ),
-              ),
-              const Spacer(),
-              AppButton(
-                text: 'Back to Home',
-                onPressed: () => context.go('/home'),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () => context.go('/organizations'),
-                child: const Text(
-                  'Explore More Organizations',
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          
+          // Blur
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+              child: const SizedBox(),
+            ),
+          ),
+
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Spacer(),
+                  
+                  // Premium Celebration Icon
+                  TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.elasticOut,
+                    builder: (context, value, child) => Transform.scale(
+                      scale: value,
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.3),
+                              blurRadius: 30,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.favorite_rounded,
+                          color: Colors.white,
+                          size: 64,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 48),
+                  
+                  const Text(
+                    'Heroic Act!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1E3A8A),
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  const Text(
+                    'Your generous gift has been secured and sent on its mission. You are making TinyWings soar higher.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF4B5563),
+                      height: 1.6,
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  AppButton(
+                    text: 'Return to Dashboard',
+                    onPressed: () => context.go('/home'),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  TextButton(
+                    onPressed: () => context.go('/impact-ledger'),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.history_edu_rounded, size: 18, color: AppColors.primary),
+                        SizedBox(width: 8),
+                        Text(
+                          'View Impact Ledger',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

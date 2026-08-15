@@ -6,8 +6,10 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_button.dart';
 import '../data/organization_repository.dart';
-import '../../../models/organization_model.dart';
+import '../../../core/models/organization_model.dart';
 import '../providers/organization_providers.dart';
+import '../../profile/providers/user_providers.dart';
+import '../../../core/models/user_model.dart';
 
 class AddOrganizationPage extends ConsumerStatefulWidget {
   const AddOrganizationPage({super.key});
@@ -57,8 +59,12 @@ class _AddOrganizationPageState extends ConsumerState<AddOrganizationPage> {
     }
   }
 
-
   Future<void> _submit() async {
+    final user = ref.read(userProfileProvider).value;
+    if (user == null) return;
+
+    if (!_formKey.currentState!.validate()) return;
+
     setState(() => _isLoading = true);
     try {
       final id = _nameController.text.toLowerCase().replaceAll(' ', '-').replaceAll(RegExp(r'[^a-z0-9-]'), '');
@@ -83,9 +89,13 @@ class _AddOrganizationPageState extends ConsumerState<AddOrganizationPage> {
         phone: _phoneController.text,
         email: _emailController.text,
         imageUrl: imageUrl,
-        isVerified: _isVerified,
-        isFeatured: _isFeatured,
+        status: user.role == UserRole.admin 
+            ? (_isVerified ? VerificationStatus.verified : VerificationStatus.pending)
+            : VerificationStatus.pending,
+        isFeatured: user.role == UserRole.admin ? _isFeatured : false,
         totalChildren: int.tryParse(_totalChildrenController.text) ?? 0,
+        submittedBy: user.uid,
+        submittedAt: DateTime.now(),
       );
 
       // 3. Save to Database
@@ -94,8 +104,11 @@ class _AddOrganizationPageState extends ConsumerState<AddOrganizationPage> {
       ref.invalidate(organizationsProvider);
 
       if (mounted) {
+        final message = user.role == UserRole.admin 
+            ? 'Organization added successfully!' 
+            : 'Submission received! It will be reviewed by an admin.';
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Organization added successfully!')),
+          SnackBar(content: Text(message)),
         );
         context.pop();
       }
@@ -112,11 +125,11 @@ class _AddOrganizationPageState extends ConsumerState<AddOrganizationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProfileProvider).value;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Organization'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        title: Text(user?.role == UserRole.admin ? 'Add Organization' : 'Submit Orphanage'),
       ),
       body: _isLoading 
         ? const Center(child: CircularProgressIndicator())
@@ -205,25 +218,26 @@ class _AddOrganizationPageState extends ConsumerState<AddOrganizationPage> {
                     decoration: const InputDecoration(labelText: 'About / Mission'),
                   ),
                   const SizedBox(height: 16),
-                   SwitchListTile(
-                    title: const Text('Official / Verified'),
-                    value: _isVerified,
-                    onChanged: (val) => setState(() => _isVerified = val),
-                    activeThumbColor: AppColors.primary,
-                  ),
-                  const SizedBox(height: 8),
-                  SwitchListTile(
-                    title: const Text('Featured on Home Page'),
-                    value: _isFeatured,
-                    onChanged: (val) => setState(() => _isFeatured = val),
-                    activeThumbColor: AppColors.primary,
-                  ),
-                  const SizedBox(height: 24),
+                  
+                  if (user?.role == UserRole.admin) ...[
+                    SwitchListTile(
+                      title: const Text('Official / Verified'),
+                      subtitle: const Text('Admin bypass for instant verification'),
+                      value: _isVerified,
+                      onChanged: (val) => setState(() => _isVerified = val),
+                    ),
+                    const SizedBox(height: 8),
+                    SwitchListTile(
+                      title: const Text('Featured on Home Page'),
+                      value: _isFeatured,
+                      onChanged: (val) => setState(() => _isFeatured = val),
+                    ),
+                  ],
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
                   AppButton(
-                    text: 'Save Organization',
+                    text: user?.role == UserRole.admin ? 'Save Organization' : 'Submit for Verification',
                     onPressed: _submit,
                   ),
                   const SizedBox(height: 40),
@@ -245,3 +259,4 @@ class _AddOrganizationPageState extends ConsumerState<AddOrganizationPage> {
     );
   }
 }
+

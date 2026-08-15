@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/widgets/app_button.dart';
-import '../../../models/need_model.dart';
+import '../../../core/models/need_model.dart';
 import '../../needs/providers/need_providers.dart';
-import '../../needs/data/need_repository.dart';
 import '../../organizations/providers/organization_providers.dart';
+import '../../notifications/data/notification_repository.dart';
+import '../../notifications/providers/notification_providers.dart';
+import '../../../core/models/notification_model.dart';
+import '../../../core/auth/auth_repository.dart';
 
 class AddNeedPage extends ConsumerStatefulWidget {
   const AddNeedPage({super.key});
@@ -56,6 +59,7 @@ class _AddNeedPageState extends ConsumerState<AddNeedPage> {
         category: _selectedCategory!,
         priority: _priority,
         subtitle: _subtitleController.text,
+        quantityOrAmount: '${_targetQuantityController.text} $_unit',
         targetQuantity: double.tryParse(_targetQuantityController.text) ?? 1.0,
         fulfilledQuantity: 0.0,
         unit: _unit,
@@ -64,8 +68,25 @@ class _AddNeedPageState extends ConsumerState<AddNeedPage> {
         createdAt: DateTime.now(),
       );
 
-      final repository = ref.read(needRepositoryProvider);
-      await repository.saveNeed(newNeed);
+      await ref.read(needActionsProvider).saveNeed(newNeed);
+
+      // Trigger notification if urgent
+      if (_priority == 'Urgent') {
+        final authData = ref.read(authModelProvider);
+        if (authData != null) {
+          final notification = AppNotification(
+            id: '', 
+            userId: authData.uid, // In a real app, this would be broadcast to followers
+            title: 'Urgent Need Posted',
+            message: 'A new urgent need for "${newNeed.title}" has been posted by ${newNeed.organizationName}.',
+            type: NotificationType.need,
+            timestamp: DateTime.now(),
+            relatedId: newNeed.id,
+          );
+          await ref.read(notificationRepositoryProvider).sendNotification(notification);
+          ref.invalidate(notificationsProvider);
+        }
+      }
       
       // Refresh providers
       ref.invalidate(approvedNeedsProvider);
@@ -199,3 +220,4 @@ class _AddNeedPageState extends ConsumerState<AddNeedPage> {
     );
   }
 }
+

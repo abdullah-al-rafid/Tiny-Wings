@@ -2,9 +2,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/auth/auth_repository.dart';
-import '../../../../models/user_model.dart';
-import '../../../../core/widgets/app_button.dart';
+import '../../../core/auth/auth_repository.dart';
+import '../../../core/models/user_model.dart';
 import '../../profile/data/user_repository.dart';
 import '../../profile/providers/user_providers.dart';
 
@@ -106,7 +105,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF93C5FD).withOpacity(0.4),
+                color: const Color(0xFF93C5FD).withValues(alpha: 0.4),
               ),
             ),
           ),
@@ -118,7 +117,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               height: 250,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFD8B4FE).withOpacity(0.4),
+                color: const Color(0xFFD8B4FE).withValues(alpha: 0.4),
               ),
             ),
           ),
@@ -157,12 +156,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             child: Container(
                               padding: const EdgeInsets.all(32.0),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.75),
+                                color: Colors.white.withValues(alpha: 0.75),
                                 borderRadius: BorderRadius.circular(24),
-                                border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
+                                border: Border.all(color: Colors.white.withValues(alpha: 0.6), width: 1.5),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
+                                    color: Colors.black.withValues(alpha: 0.05),
                                     blurRadius: 30,
                                     offset: const Offset(0, 10),
                                   ),
@@ -204,7 +203,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                         labelText: 'Full Name',
                                         prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF6B7280)),
                                         filled: true,
-                                        fillColor: Colors.white.withOpacity(0.8),
+                                        fillColor: Colors.white.withValues(alpha: 0.8),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(12),
                                           borderSide: BorderSide.none,
@@ -226,7 +225,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                         labelText: 'Email Address',
                                         prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF6B7280)),
                                         filled: true,
-                                        fillColor: Colors.white.withOpacity(0.8),
+                                        fillColor: Colors.white.withValues(alpha: 0.8),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(12),
                                           borderSide: BorderSide.none,
@@ -251,7 +250,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                         labelText: 'Phone Number',
                                         prefixIcon: const Icon(Icons.phone_outlined, color: Color(0xFF6B7280)),
                                         filled: true,
-                                        fillColor: Colors.white.withOpacity(0.8),
+                                        fillColor: Colors.white.withValues(alpha: 0.8),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(12),
                                           borderSide: BorderSide.none,
@@ -273,7 +272,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                         labelText: 'Password',
                                         prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF6B7280)),
                                         filled: true,
-                                        fillColor: Colors.white.withOpacity(0.8),
+                                        fillColor: Colors.white.withValues(alpha: 0.8),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(12),
                                           borderSide: BorderSide.none,
@@ -298,7 +297,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                         labelText: 'Confirm Password',
                                         prefixIcon: const Icon(Icons.lock_reset, color: Color(0xFF6B7280)),
                                         filled: true,
-                                        fillColor: Colors.white.withOpacity(0.8),
+                                        fillColor: Colors.white.withValues(alpha: 0.8),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(12),
                                           borderSide: BorderSide.none,
@@ -325,7 +324,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                           borderRadius: BorderRadius.circular(30),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(0xFF3B82F6).withOpacity(0.3),
+                                              color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
                                               blurRadius: 12,
                                               offset: const Offset(0, 4),
                                             ),

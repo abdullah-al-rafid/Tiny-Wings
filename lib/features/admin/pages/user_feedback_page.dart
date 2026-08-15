@@ -4,7 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../settings/providers/support_providers.dart';
 import '../../settings/data/support_repository.dart';
-import '../../../models/support_ticket_model.dart';
+import '../../../core/models/support_ticket_model.dart';
 
 class UserFeedbackPage extends ConsumerStatefulWidget {
   const UserFeedbackPage({super.key});
@@ -230,3 +230,4 @@ class _UserFeedbackPageState extends ConsumerState<UserFeedbackPage> {
     return '${date.day}/${date.month}/${date.year}';
   }
 }
+

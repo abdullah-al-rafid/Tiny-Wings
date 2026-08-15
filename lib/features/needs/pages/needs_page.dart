@@ -200,10 +200,10 @@ class NeedsPage extends ConsumerWidget {
                         final activeNeeds = needs.where((n) => n.status != 'fulfilled').toList();
                         final filteredByCategory = selectedCategory == 'All'
                             ? activeNeeds
-                            : activeNeeds.where((n) => n.category == selectedCategory).toList();
+                            : activeNeeds.where((n) => _matchesCategory(n.category, selectedCategory)).toList();
                         final filteredNeeds = selectedPriority == 'All'
                             ? filteredByCategory
-                            : filteredByCategory.where((n) => n.priority == selectedPriority).toList();
+                            : filteredByCategory.where((n) => _matchesPriority(n.priority, selectedPriority)).toList();
 
                         if (filteredNeeds.isEmpty) {
                           return _buildEmptyState();
@@ -305,6 +305,24 @@ class NeedsPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  bool _matchesCategory(String actualCategory, String selectedCategory) {
+    final normalized = actualCategory.toLowerCase();
+    return switch (selectedCategory) {
+      'Medicine' => normalized == 'medicine' || normalized == 'medical' || normalized == 'health',
+      _ => normalized == selectedCategory.toLowerCase(),
+    };
+  }
+
+  bool _matchesPriority(String actualPriority, String selectedPriority) {
+    final normalized = actualPriority.toLowerCase();
+    return switch (selectedPriority) {
+      'Urgent' => normalized == 'urgent' || normalized == 'critical' || normalized == 'high',
+      'Normal' => normalized == 'normal' || normalized == 'medium',
+      'Low' => normalized == 'low',
+      _ => normalized == selectedPriority.toLowerCase(),
+    };
   }
 }
 

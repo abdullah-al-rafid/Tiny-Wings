@@ -1,66 +1,56 @@
-import 'dart:convert';
-import '../../../core/api/firebase_client.dart';
-import '../../../models/support_ticket_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/api/firebase_providers.dart';
+import '../../../core/models/support_ticket_model.dart';
 
 final supportRepositoryProvider = Provider<SupportRepository>((ref) {
-  final client = ref.watch(firebaseClientProvider);
-  return SupportRepository(client);
+  final firestore = ref.watch(firestoreProvider);
+  return SupportRepository(firestore);
 });
 
 class SupportRepository {
-  final FirebaseClient _client;
-  SupportRepository(this._client);
+  final FirebaseFirestore _firestore;
+
+  SupportRepository(this._firestore);
 
   Future<void> saveTicket(SupportTicket ticket) async {
-    // New tickets are unread by admin, and "read" by user (since they just wrote it)
     final newTicket = ticket.copyWith(
       isReadByAdmin: false,
       isReadByUser: true,
     );
-    await _client.post('support_tickets', newTicket.toJson());
+    await _firestore.collection('support_tickets').add(newTicket.toJson());
   }
 
   Future<void> updateTicket(SupportTicket ticket) async {
-    await _client.put('support_tickets/${ticket.id}', ticket.toJson());
+    await _firestore.collection('support_tickets').doc(ticket.id).set(ticket.toJson(), SetOptions(merge: true));
   }
 
   Future<void> markAsReadByUser(SupportTicket ticket) async {
     if (ticket.isReadByUser) return;
-    final updated = ticket.copyWith(isReadByUser: true);
-    await updateTicket(updated);
+    await _firestore.collection('support_tickets').doc(ticket.id).update({'isReadByUser': true});
   }
 
   Future<void> markAsReadByAdmin(SupportTicket ticket) async {
     if (ticket.isReadByAdmin) return;
-    final updated = ticket.copyWith(isReadByAdmin: true);
-    await updateTicket(updated);
+    await _firestore.collection('support_tickets').doc(ticket.id).update({'isReadByAdmin': true});
   }
 
   Future<List<SupportTicket>> getUserTickets(String userId) async {
-    final response = await _client.get('support_tickets');
-    if (response.body == 'null') return [];
-    
-    final Map<String, dynamic>? data = json.decode(response.body);
-    if (data == null) return [];
-
-    return data.entries
-        .map((e) => SupportTicket.fromJson(e.value as Map<String, dynamic>, e.key))
-        .where((t) => t.userId == userId)
-        .toList()
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    final snapshot = await _firestore
+        .collection('support_tickets')
+        .where('userId', isEqualTo: userId)
+        .get();
+    final tickets = snapshot.docs
+        .map((doc) => SupportTicket.fromJson(doc.data(), doc.id))
+        .toList();
+    tickets.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return tickets;
   }
 
   Future<List<SupportTicket>> getAllTickets() async {
-    final response = await _client.get('support_tickets');
-    if (response.body == 'null') return [];
-    
-    final Map<String, dynamic>? data = json.decode(response.body);
-    if (data == null) return [];
-
-    return data.entries
-        .map((e) => SupportTicket.fromJson(e.value as Map<String, dynamic>, e.key))
-        .toList()
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    final snapshot = await _firestore.collection('support_tickets')
+        .orderBy('timestamp', descending: true)
+        .get();
+    return snapshot.docs.map((doc) => SupportTicket.fromJson(doc.data(), doc.id)).toList();
   }
 }
