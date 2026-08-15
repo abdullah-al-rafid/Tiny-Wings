@@ -378,45 +378,6 @@ The application includes:
 
 ---
 
-## 📸 Screenshots
-
-Add your application screenshots inside the `screenshots/` directory.
-
-### Recommended Structure
-
-    screenshots/
-    ├── welcome.png
-    ├── login.png
-    ├── register.png
-    ├── home.png
-    ├── organizations.png
-    ├── needs.png
-    ├── donations.png
-    ├── sponsorship.png
-    ├── volunteering.png
-    ├── profile.png
-    └── dark-mode.png
-
-### Preview
-
-| Welcome | Home |
-|---|---|
-| ![Welcome](screenshots/welcome.png) | ![Home](screenshots/home.png) |
-
-| Organizations | Needs |
-|---|---|
-| ![Organizations](screenshots/organizations.png) | ![Needs](screenshots/needs.png) |
-
-| Donations | Sponsorship |
-|---|---|
-| ![Donations](screenshots/donations.png) | ![Sponsorship](screenshots/sponsorship.png) |
-
-| Volunteering | Profile |
-|---|---|
-| ![Volunteering](screenshots/volunteering.png) | ![Profile](screenshots/profile.png) |
-
----
-
 ## 🧪 Testing
 
 The project supports Flutter's testing framework.
