@@ -438,7 +438,7 @@ The application is a prototype and may require additional security, payment veri
 **Daffodil International University**
 
 - 🔗 GitHub: https://github.com/abdullah-al-rafid
-- 🔗 LinkedIn: https://www.linkedin.com/in/abdullah-al-rafid-228b03247/
+- 🔗 LinkedIn: https://www.linkedin.com/in/abdullah-al-rafid/
 
 ---
 
